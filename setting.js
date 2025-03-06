@@ -26,7 +26,7 @@
 
       let mazeSize = size.value;
       let number = rowsCols.value;
-      if (mazeSize > 600 || number > 50) {
+      if (mazeSize > 10000 || number > 80) {
         alert("Maze too large!");
         return;
       }

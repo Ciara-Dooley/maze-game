@@ -21,8 +21,9 @@ class Maze {
   }
 
   addGhost() {
-    let ghost = new Ghost(2, 0, this);
-    this.ghosts.push(ghost);
+    let ghost = new Ghost(14, 0, this);
+    this.ghost.push(ghost);
+  
   }
 
   // Set the grid: Create new this.grid array based on number of instance rows and columns
@@ -43,6 +44,9 @@ class Maze {
     setInterval(() => {
       console.log("move ghosts")
       this.moveGhosts()
+      console.log("redraw")
+      this.draw()
+      current.highlight(this.columns)
     }, 500)
   }
 
@@ -85,6 +89,8 @@ class Maze {
     for (let ghost of this.ghosts) {
       ghost.draw();
     }
+
+    
 
     // If no more items in the stack then all cells have been visted and the function can be exited
     if (this.stack.length === 0) {
@@ -193,6 +199,7 @@ class Cell {
     let x = (this.colNum * this.parentSize) / columns + 1;
     let y = (this.rowNum * this.parentSize) / columns + 1;
     ctx.fillStyle = "purple";
+
     ctx.fillRect(
       x,
       y,
@@ -269,23 +276,17 @@ class Ghost {
   }
 
   moveDown() {
-    let currentTile = this.maze.grid[this.colNum][this.rowNum];
+    let currentTile = this.maze.grid[this.rowNum][this.colNum];
     //if next = undefined then }       
     if (!currentTile.walls.bottomWall) {
-      let next = newMaze.grid[row - 1][col];
-      current = next;
-      if (current.goal) complete.style.display = "block";
       this.rowNum += 1;
       return true;
     }
     return false;
   }
   moveUp() {
-    let currentTile = this.maze.grid[this.colNum][this.rowNum];
+    let currentTile = this.maze.grid[this.rowNum][this.colNum];
     if (!currentTile.walls.topWall) {
-      let next = newMaze.grid[row - 1][col];
-      current = next;
-      if (current.goal) complete.style.display = "block";
       this.rowNum -= 1;
       return true;
     }
@@ -293,22 +294,16 @@ class Ghost {
   }
   break;
   moveRight() {
-    let currentTile = this.maze.grid[this.colNum][this.rowNum];
+    let currentTile = this.maze.grid[this.rowNum][this.colNum];
     if (!currentTile.walls.rightWall) {
-      let next = newMaze.grid[row - 1][col];
-      current = next;
-      if (current.goal) complete.style.display = "block";
       this.colNum += 1;
       return true;
     }
     return false;
   }
   moveLeft() {
-    let currentTile = this.maze.grid[this.colNum][this.rowNum];
+    let currentTile = this.maze.grid[this.rowNum][this.colNum];
     if (!currentTile.walls.leftWall) {
-      let next = newMaze.grid[row - 1][col];
-      current = next;
-      if (current.goal) complete.style.display = "block";
       this.colNum -= 1;
       return true;
     }
@@ -349,8 +344,31 @@ class Ghost {
     }
 
   }
+
+  checkifplayerisdead(){
+        checkCollision(ghost, highlight) {
+        if (
+        ghost.x < highlight.x + highlight.width &&
+        ghost.x + ghost.width > highlight.x &&
+        ghost.y < highlight.y + highlight.height &&
+        ghost.height + ghost.y > highlight.y
+      ) {
+        return true; // Collision detected
+      } else {
+        return false; // No collision
+      }
+      
+    }
+    if (checkCollision = true){
+
+        this.goal = true;
+      }else{
+        this.goal = false;
+      }
+
+
+
+  }
 }
 
-// declare curent tile
-
-// can move out of the bouday of the maze        
+ 
