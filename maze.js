@@ -22,7 +22,7 @@ class Maze {
 
   addGhost() {
     let ghost = new Ghost(14, 0, this);
-    this.ghost.push(ghost);
+    this.ghosts.push(ghost);
   
   }
 
@@ -345,30 +345,5 @@ class Ghost {
 
   }
 
-  checkifplayerisdead(){
-        checkCollision(ghost, highlight) {
-        if (
-        ghost.x < highlight.x + highlight.width &&
-        ghost.x + ghost.width > highlight.x &&
-        ghost.y < highlight.y + highlight.height &&
-        ghost.height + ghost.y > highlight.y
-      ) {
-        return true; // Collision detected
-      } else {
-        return false; // No collision
-      }
-      
-    }
-    if (checkCollision = true){
 
-        this.goal = true;
-      }else{
-        this.goal = false;
-      }
-
-
-
-  }
 }
-
- 
