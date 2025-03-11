@@ -46,7 +46,15 @@ class Maze {
     current = this.grid[0][0];
     this.grid[this.rows - 1][this.columns - 1].goal = true;
 
+    if (generationComplete) {
+      this.columns += 5; // Increase columns by 5
+      this.setup(); // Regenerate the maze with new dimensions
+      generationComplete = false; // Reset for the next maze
+    }
+    
     setInterval(() => {
+      let row = current.rowNum;
+      let col = current.colNum;
       console.log("move ghosts")
       this.moveGhosts()
       console.log("redraw")
@@ -116,7 +124,8 @@ class Maze {
   moveGhosts() {
 
     //get the ghost  to move byitself 
-
+    let row = current.rowNum;
+    let col = current.colNum;
     this.ghosts.forEach(ghost => ghost.moveRandom())
 
   }
@@ -262,6 +271,8 @@ class Cell {
 
 class Ghost {
   constructor(colNum, rowNum, maze, color) {
+    this.lastPosition = { colNum: colNum, rowNum: rowNum }; // Track the last position
+
     this.colNum = colNum;
     this.rowNum = rowNum;
     this.maze = maze;
@@ -285,6 +296,10 @@ class Ghost {
   }
 
   moveDown() {
+    if (this.rowNum + 1 === this.lastPosition.rowNum && this.colNum === this.lastPosition.colNum) {
+      return false; // Prevent moving back to the last position
+    }
+
     let currentTile = this.maze.grid[this.rowNum][this.colNum];
     //if next = undefined then }       
     if (!currentTile.walls.bottomWall) {
@@ -294,6 +309,10 @@ class Ghost {
     return false;
   }
   moveUp() {
+    if (this.rowNum - 1 === this.lastPosition.rowNum && this.colNum === this.lastPosition.colNum) {
+      return false; // Prevent moving back to the last position
+    }
+
     let currentTile = this.maze.grid[this.rowNum][this.colNum];
     if (!currentTile.walls.topWall) {
       this.rowNum -= 1;
@@ -303,6 +322,10 @@ class Ghost {
   }
   break;
   moveRight() {
+    if (this.rowNum === this.lastPosition.rowNum && this.colNum + 1 === this.lastPosition.colNum) {
+      return false; // Prevent moving back to the last position
+    }
+
     let currentTile = this.maze.grid[this.rowNum][this.colNum];
     if (!currentTile.walls.rightWall) {
       this.colNum += 1;
@@ -311,6 +334,10 @@ class Ghost {
     return false;
   }
   moveLeft() {
+    if (this.rowNum === this.lastPosition.rowNum && this.colNum - 1 === this.lastPosition.colNum) {
+      return false; // Prevent moving back to the last position
+    }
+
     let currentTile = this.maze.grid[this.rowNum][this.colNum];
     if (!currentTile.walls.leftWall) {
       this.colNum -= 1;
@@ -321,14 +348,18 @@ class Ghost {
 
 
   moveRandom() {
+    let row = current.rowNum;
+    let col = current.colNum;
     // Check for collision with the highlighted square
     if (this.colNum === this.maze.current.colNum && this.rowNum === this.maze.current.rowNum) {
       this.maze.collision = true; // Set collision to true if ghost collides with the highlighted square
     }
 
     let moved = false;
+    this.lastPosition = { colNum: this.colNum, rowNum: this.rowNum }; // Update last position before moving
+
     let tries = 0;
-    while (!moved && tries < 10) {
+    while (!moved && tries < 100) {
       tries++;
       let dir = Math.floor(Math.random() * 4) // 0, 1, 2, 3
       console.log("move " + dir)
