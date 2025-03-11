@@ -28,6 +28,9 @@ class Maze {
     
     // Add another blue ghost near the bottom of the maze
     let blueGhost = new Ghost(14, this.rows - 1, this, "blue"); // Set color for the blue ghost
+    let pinkGhost = new Ghost(0, this.rows - 1, this, "pink"); // Set color for the pink ghost on the left
+    this.ghosts.push(pinkGhost);
+
     this.ghosts.push(blueGhost);
   }
 
@@ -53,8 +56,7 @@ class Maze {
     }
     
     setInterval(() => {
-      let row = current.rowNum;
-      let col = current.colNum;
+      
       console.log("move ghosts")
       this.moveGhosts()
       console.log("redraw")
@@ -124,8 +126,7 @@ class Maze {
   moveGhosts() {
 
     //get the ghost  to move byitself 
-    let row = current.rowNum;
-    let col = current.colNum;
+
     this.ghosts.forEach(ghost => ghost.moveRandom())
 
   }
@@ -262,8 +263,13 @@ class Cell {
       ctx.fillRect(x + 1, y + 1, size / columns - 2, size / rows - 2);
     }
     if (this.goal) {
-      ctx.fillStyle = "rgb(83, 247, 43)";
+      // Draw the goal as a portal
+      const gradient = ctx.createRadialGradient(x + size / columns / 2, y + size / rows / 2, 5, x + size / columns / 2, y + size / rows / 2, size / columns / 2);
+      gradient.addColorStop(0, "rgba(255, 255, 255, 1)"); // Center color
+      gradient.addColorStop(1, "rgba(83, 247, 43, 0)"); // Outer color
+      ctx.fillStyle = gradient;
       ctx.fillRect(x + 1, y + 1, size / columns - 2, size / rows - 2);
+
     }
   }
 
@@ -281,18 +287,33 @@ class Ghost {
   }
 
   draw() {
-    // Additions and subtractions added so the highlighted cell does cover the walls
-    let x = (this.colNum * this.maze.size) / this.maze.columns + 1;
-    let y = (this.rowNum * this.maze.size) / this.maze.columns + 1;
     ctx.fillStyle = this.color; // Use the color property for drawing
-
-
     ctx.fillRect(
       x,
       y,
       this.maze.size / this.maze.columns - 3,
       this.maze.size / this.maze.columns - 3
     );
+
+  }
+
+  drawGhostShape() {
+    // Draw the ghost shape based on the color
+    let x = (this.colNum * this.maze.size) / this.maze.columns + 1;
+    let y = (this.rowNum * this.maze.size) / this.maze.columns + 1;
+    ctx.fillStyle = this.color; // Use the color property for drawing
+
+    // Draw a simple ghost shape
+    ctx.beginPath();
+    ctx.moveTo(x + 15, y);
+    ctx.bezierCurveTo(x + 30, y - 20, x + 50, y - 20, x + 65, y);
+    ctx.bezierCurveTo(x + 80, y + 20, x + 50, y + 40, x + 35, y + 40);
+    ctx.bezierCurveTo(x + 20, y + 40, x, y + 20, x + 15, y);
+
+
+    ctx.closePath();
+    ctx.fill();
+
   }
 
   moveDown() {
@@ -348,10 +369,8 @@ class Ghost {
 
 
   moveRandom() {
-    let row = current.rowNum;
-    let col = current.colNum;
     // Check for collision with the highlighted square
-    if (this.colNum === this.maze.current.colNum && this.rowNum === this.maze.current.rowNum) {
+    if (this.colNum === current.colNum && this.rowNum === current.rowNum) {
       this.maze.collision = true; // Set collision to true if ghost collides with the highlighted square
     }
 
