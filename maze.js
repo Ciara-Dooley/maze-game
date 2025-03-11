@@ -8,6 +8,8 @@ let ctx = maze.getContext("2d");
 let generationComplete = false;
 
 let current;
+let collision = false; // Variable to track collision
+
 let goal;
 
 class Maze {
@@ -21,9 +23,12 @@ class Maze {
   }
 
   addGhost() {
-    let ghost = new Ghost(14, 0, this);
+    let ghost = new Ghost(14, 0, this, "red"); // Set color for the red ghost
     this.ghosts.push(ghost);
-  
+    
+    // Add another blue ghost near the bottom of the maze
+    let blueGhost = new Ghost(14, this.rows - 1, this, "blue"); // Set color for the blue ghost
+    this.ghosts.push(blueGhost);
   }
 
   // Set the grid: Create new this.grid array based on number of instance rows and columns
@@ -256,17 +261,21 @@ class Cell {
 }
 
 class Ghost {
-  constructor(colNum, rowNum, maze) {
+  constructor(colNum, rowNum, maze, color) {
     this.colNum = colNum;
     this.rowNum = rowNum;
     this.maze = maze;
+    this.color = color; // Set color for the ghost
+
   }
 
   draw() {
     // Additions and subtractions added so the highlighted cell does cover the walls
     let x = (this.colNum * this.maze.size) / this.maze.columns + 1;
     let y = (this.rowNum * this.maze.size) / this.maze.columns + 1;
-    ctx.fillStyle = "red";
+    ctx.fillStyle = this.color; // Use the color property for drawing
+
+
     ctx.fillRect(
       x,
       y,
@@ -312,21 +321,17 @@ class Ghost {
 
 
   moveRandom() {
+    // Check for collision with the highlighted square
+    if (this.colNum === this.maze.current.colNum && this.rowNum === this.maze.current.rowNum) {
+      this.maze.collision = true; // Set collision to true if ghost collides with the highlighted square
+    }
+
     let moved = false;
     let tries = 0;
     while (!moved && tries < 10) {
       tries++;
       let dir = Math.floor(Math.random() * 4) // 0, 1, 2, 3
       console.log("move " + dir)
-      // if (dir == 0){
-
-      // } else if (dir == 1){
-
-      // } else if (dir == 2){
-
-      // } else if (dir == 3){
-
-      // }
       switch (dir) {
         case 0:
           moved = this.moveDown();
