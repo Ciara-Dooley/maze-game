@@ -1,6 +1,4 @@
-//genarating the maze 
-
-// DEPTH FIRST SEARCH MAZE IMPLEMENTATION IN JAVASCRIPT BY CONOR BAILEY
+// Generating the maze 
 
 // Initialize the canvas
 let maze = document.querySelector(".maze");
@@ -8,8 +6,6 @@ let ctx = maze.getContext("2d");
 let generationComplete = false;
 
 let current;
-let collision = false; // Variable to track collision
-
 let goal;
 
 class Maze {
@@ -22,16 +18,9 @@ class Maze {
     this.ghosts = [];
   }
 
-  addGhost() {
-    let ghost = new Ghost(14, 0, this, "red"); // Set color for the red ghost
+  addGhost(color, colNum, rowNum) {
+    let ghost = new Ghost(colNum, rowNum, this, color);
     this.ghosts.push(ghost);
-    
-    // Add another blue ghost near the bottom of the maze
-    let blueGhost = new Ghost(14, this.rows - 1, this, "blue"); // Set color for the blue ghost
-    let pinkGhost = new Ghost(0, this.rows - 1, this, "pink"); // Set color for the pink ghost on the left
-    this.ghosts.push(pinkGhost);
-
-    this.ghosts.push(blueGhost);
   }
 
   // Set the grid: Create new this.grid array based on number of instance rows and columns
@@ -49,20 +38,19 @@ class Maze {
     current = this.grid[0][0];
     this.grid[this.rows - 1][this.columns - 1].goal = true;
 
-    if (generationComplete) {
-      this.columns += 5; // Increase columns by 5
-      this.setup(); // Regenerate the maze with new dimensions
-      generationComplete = false; // Reset for the next maze
-    }
-    
+    // Positioning the ghosts
+    this.addGhost("red", 0, this.rows - 1); // Bottom left
+    this.addGhost("pink", Math.floor(this.columns / 2), Math.floor(this.rows / 2)); // Middle
+    this.addGhost("blue", this.columns - 1, 0); // Top right
+
     setInterval(() => {
-      
-      console.log("move ghosts")
-      this.moveGhosts()
-      console.log("redraw")
-      this.draw()
-      current.highlight(this.columns)
-    }, 500)
+
+      console.log("move ghosts");
+      this.moveGhosts();
+      console.log("redraw");
+      this.draw();
+      current.highlight(this.columns);
+    }, 500);
   }
 
   // Draw the canvas by setting the size and placing the cells in the grid array on the canvas.
@@ -105,30 +93,21 @@ class Maze {
       ghost.draw();
     }
 
-    
-
     // If no more items in the stack then all cells have been visted and the function can be exited
     if (this.stack.length === 0) {
       generationComplete = true;
       return;
     }
 
-
     // Recursively call the draw function. This will be called up until the stack is empty
     window.requestAnimationFrame(() => {
       this.draw();
     });
-    //     setTimeout(() => {rd
-    //       this.draw();
-    //     }, 10);
   }
 
   moveGhosts() {
-
     //get the ghost  to move byitself 
-
-    this.ghosts.forEach(ghost => ghost.moveRandom())
-
+    this.ghosts.forEach(ghost => ghost.moveRandom());
   }
 }
 
@@ -250,8 +229,6 @@ class Cell {
   show(size, rows, columns) {
     let x = (this.colNum * size) / columns;
     let y = (this.rowNum * size) / rows;
-    // console.log(`x =${x}`);
-    // console.log(`y =${y}`);
     ctx.strokeStyle = "#ffffff";
     ctx.fillStyle = "black";
     ctx.lineWidth = 2;
@@ -263,12 +240,13 @@ class Cell {
       ctx.fillRect(x + 1, y + 1, size / columns - 2, size / rows - 2);
     }
     if (this.goal) {
-      // Draw the goal as a portal
-      const gradient = ctx.createRadialGradient(x + size / columns / 2, y + size / rows / 2, 5, x + size / columns / 2, y + size / rows / 2, size / columns / 2);
-      gradient.addColorStop(0, "rgba(255, 255, 255, 1)"); // Center color
-      gradient.addColorStop(1, "rgba(83, 247, 43, 0)"); // Outer color
-      ctx.fillStyle = gradient;
-      ctx.fillRect(x + 1, y + 1, size / columns - 2, size / rows - 2);
+      ctx.fillStyle = "rgba(83, 247, 43, 0.8)";
+      ctx.beginPath();
+      ctx.arc(x + size / columns / 2, y + size / rows / 2, size / columns / 2, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = "gold";
+      ctx.lineWidth = 4;
+      ctx.stroke();
 
     }
   }
@@ -277,17 +255,20 @@ class Cell {
 
 class Ghost {
   constructor(colNum, rowNum, maze, color) {
-    this.lastPosition = { colNum: colNum, rowNum: rowNum }; // Track the last position
-
     this.colNum = colNum;
     this.rowNum = rowNum;
     this.maze = maze;
-    this.color = color; // Set color for the ghost
-
+    this.color = color;
   }
 
   draw() {
-    ctx.fillStyle = this.color; // Use the color property for drawing
+    // Additions and subtractions added so the highlighted cell does cover the walls
+    let x = (this.colNum * this.maze.size) / this.maze.columns + 1;
+    let y = (this.rowNum * this.maze.size) / this.maze.columns + 1;
+    ctx.fillStyle = this.color;
+
+
+
     ctx.fillRect(
       x,
       y,
@@ -295,34 +276,11 @@ class Ghost {
       this.maze.size / this.maze.columns - 3
     );
 
-  }
-
-  drawGhostShape() {
-    // Draw the ghost shape based on the color
-    let x = (this.colNum * this.maze.size) / this.maze.columns + 1;
-    let y = (this.rowNum * this.maze.size) / this.maze.columns + 1;
-    ctx.fillStyle = this.color; // Use the color property for drawing
-
-    // Draw a simple ghost shape
-    ctx.beginPath();
-    ctx.moveTo(x + 15, y);
-    ctx.bezierCurveTo(x + 30, y - 20, x + 50, y - 20, x + 65, y);
-    ctx.bezierCurveTo(x + 80, y + 20, x + 50, y + 40, x + 35, y + 40);
-    ctx.bezierCurveTo(x + 20, y + 40, x, y + 20, x + 15, y);
-
-
-    ctx.closePath();
-    ctx.fill();
 
   }
 
   moveDown() {
-    if (this.rowNum + 1 === this.lastPosition.rowNum && this.colNum === this.lastPosition.colNum) {
-      return false; // Prevent moving back to the last position
-    }
-
     let currentTile = this.maze.grid[this.rowNum][this.colNum];
-    //if next = undefined then }       
     if (!currentTile.walls.bottomWall) {
       this.rowNum += 1;
       return true;
@@ -330,10 +288,6 @@ class Ghost {
     return false;
   }
   moveUp() {
-    if (this.rowNum - 1 === this.lastPosition.rowNum && this.colNum === this.lastPosition.colNum) {
-      return false; // Prevent moving back to the last position
-    }
-
     let currentTile = this.maze.grid[this.rowNum][this.colNum];
     if (!currentTile.walls.topWall) {
       this.rowNum -= 1;
@@ -341,12 +295,7 @@ class Ghost {
     }
     return false;
   }
-  break;
   moveRight() {
-    if (this.rowNum === this.lastPosition.rowNum && this.colNum + 1 === this.lastPosition.colNum) {
-      return false; // Prevent moving back to the last position
-    }
-
     let currentTile = this.maze.grid[this.rowNum][this.colNum];
     if (!currentTile.walls.rightWall) {
       this.colNum += 1;
@@ -355,10 +304,6 @@ class Ghost {
     return false;
   }
   moveLeft() {
-    if (this.rowNum === this.lastPosition.rowNum && this.colNum - 1 === this.lastPosition.colNum) {
-      return false; // Prevent moving back to the last position
-    }
-
     let currentTile = this.maze.grid[this.rowNum][this.colNum];
     if (!currentTile.walls.leftWall) {
       this.colNum -= 1;
@@ -367,21 +312,13 @@ class Ghost {
     return false;
   }
 
-
   moveRandom() {
-    // Check for collision with the highlighted square
-    if (this.colNum === current.colNum && this.rowNum === current.rowNum) {
-      this.maze.collision = true; // Set collision to true if ghost collides with the highlighted square
-    }
-
     let moved = false;
-    this.lastPosition = { colNum: this.colNum, rowNum: this.rowNum }; // Update last position before moving
-
     let tries = 0;
-    while (!moved && tries < 100) {
+    while (!moved && tries < 10) {
       tries++;
-      let dir = Math.floor(Math.random() * 4) // 0, 1, 2, 3
-      console.log("move " + dir)
+      let dir = Math.floor(Math.random() * 4); // 0, 1, 2, 3
+      console.log("move " + dir);
       switch (dir) {
         case 0:
           moved = this.moveDown();
@@ -397,8 +334,5 @@ class Ghost {
           break;
       }
     }
-
   }
-
-
 }
