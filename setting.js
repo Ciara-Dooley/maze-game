@@ -36,7 +36,6 @@
       newMaze = new Maze(mazeSize, number, number);
       newMaze.setup();
       newMaze.draw();
-      newMaze.addGhost();
     }
 
     function move(e) {

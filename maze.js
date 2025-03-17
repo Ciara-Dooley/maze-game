@@ -1,12 +1,15 @@
 // Generating the maze 
 
 // Initialize the canvas
+let loss = document.querySelector(".loss");
 let maze = document.querySelector(".maze");
 let ctx = maze.getContext("2d");
 let generationComplete = false;
 
 let current;
 let goal;
+
+loss.style.display = "none";
 
 class Maze {
   constructor(size, rows, columns) {
@@ -42,7 +45,7 @@ class Maze {
     this.addGhost("red", 0, this.rows - 1); // Bottom left
     this.addGhost("pink", Math.floor(this.columns / 2), Math.floor(this.rows / 2)); // Middle
     this.addGhost("blue", this.columns - 1, 0); // Top right
-
+    
     setInterval(() => {
 
       console.log("move ghosts");
@@ -71,7 +74,7 @@ class Maze {
     let next = current.checkNeighbours();
     // If there is a non visited neighbour cell
     if (next) {
-      next.visited = true;
+      next.visited = true;  
       // Add the current cell to the stack for backtracking
       this.stack.push(current);
       // this function will highlight the current cell on the grid. The parameter columns is passed
@@ -312,7 +315,14 @@ class Ghost {
     return false;
   }
 
+  gameOver() {
+    if (ghost.colNum === current.colNum && ghost.rowNum === current.rowNum) loss.style.display = "block";
+  }
+
+  
+
   moveRandom() {
+
     let moved = false;
     let tries = 0;
     while (!moved && tries < 10) {
