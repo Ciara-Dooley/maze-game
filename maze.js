@@ -53,6 +53,7 @@ class Maze {
       console.log("redraw");
       this.draw();
       current.highlight(this.columns);
+      gameOver();
     }, 500);
   }
 
@@ -316,7 +317,12 @@ class Ghost {
   }
 
   gameOver() {
-    if (ghost.colNum === current.colNum && ghost.rowNum === current.rowNum) loss.style.display = "block";
+    //fix this pice of code that is not working beacuse it not decctecting //
+    //its probally doent know player .current and ghost.curent// 
+    if (current.ghost.colNum === current.highlight.colNum && current.ghost.rowNum === current.highlight.rowNum) {
+      console.log(chese)
+      loss.style.display = "block";
+    }
   }
 
   
