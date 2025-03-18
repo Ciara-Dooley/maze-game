@@ -37,9 +37,10 @@ class Maze {
       }
       this.grid.push(row);
     }
-    // Set the starting grid
+    // Set the starting grid and place pellets
     current = this.grid[0][0];
     this.grid[this.rows - 1][this.columns - 1].goal = true;
+    this.placePellets(); // Call to place pellets in the maze
 
     // Positioning the ghosts
     this.addGhost("red", 0, this.rows - 1); // Bottom left
@@ -123,6 +124,23 @@ class Maze {
    
     this.gameOver();
   }
+
+  placePellets() {
+    const totalCells = this.rows * this.columns;
+    const pelletCount = Math.floor(totalCells * 0.1); // Place pellets in 10% of the cells
+    let placedPellets = 0;
+
+    while (placedPellets < pelletCount) {
+      const randomRow = Math.floor(Math.random() * this.rows);
+      const randomCol = Math.floor(Math.random() * this.columns);
+      const cell = this.grid[randomRow][randomCol];
+
+      if (!cell.hasPellet && !cell.goal) { // Ensure pellets are not placed on the goal
+        cell.hasPellet = true;
+        placedPellets++;
+      }
+    }
+  }
 }
 
 class Cell {
@@ -138,6 +156,7 @@ class Cell {
       leftWall: true,
     };
     this.goal = false;
+    this.hasPellet = false; // New property for pellets
     // parentGrid is passed in to enable the  checkneighbours method.
     // parentSize is passed in to set the size of each cell on the grid
     this.parentGrid = parentGrid;
@@ -239,7 +258,8 @@ class Cell {
     }
   }
 
-  // Draws each of the cells on the maze canvas
+  // Draws each of the cells on the maze canvas and pellets
+
   show(size, rows, columns) {
     let x = (this.colNum * size) / columns;
     let y = (this.rowNum * size) / rows;
@@ -260,6 +280,13 @@ class Cell {
       ctx.fillStyle = gradient;
       ctx.fillRect(x + 1, y + 1, size / columns - 2, size / rows - 2);
 
+    }
+    // Draw pellet if present
+    if (this.hasPellet) {
+      ctx.fillStyle = "grey";
+      ctx.beginPath();
+      ctx.arc(x + size / columns / 2, y + size / rows / 2, 5, 0, Math.PI * 2);
+      ctx.fill();
     }
   }
 
@@ -353,4 +380,3 @@ class Ghost {
     }
   }
 }
-
