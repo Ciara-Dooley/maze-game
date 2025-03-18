@@ -3,7 +3,7 @@
     let rowsCols = document.querySelector("#number");
     let complete = document.querySelector(".complete");
     let replay = document.querySelector(".replay");
-    let close = document.querySelector(".close");
+    let closeEls = document.querySelectorAll(".close");
 
     let newMaze;
 
@@ -13,9 +13,12 @@
       location.reload();
     });
 
-    close.addEventListener("click", () => {
-      complete.style.display = "none";
-    });
+    for(let close of closeEls){
+      close.addEventListener("click", () => {
+        complete.style.display = "none";
+        loss.style.display = "none";
+      });
+    }
 
     function generateMaze(e) {
       e.preventDefault();

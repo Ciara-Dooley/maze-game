@@ -70,6 +70,21 @@ input {
   border-radius: 10px;
 }
 
+.loss {
+  display: none;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 50%;
+  height: 30%;
+  background: #000000;
+  z-index: 4;
+  padding: 2rem;
+  text-align: center;
+  border-radius: 10px;
+}
+
 .title {
   position: absolute;
   left: 50%;

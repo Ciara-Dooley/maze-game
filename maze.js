@@ -9,7 +9,7 @@ let generationComplete = false;
 let current;
 let goal;
 
-loss.style.display = "none";
+
 
 class Maze {
   constructor(size, rows, columns) {
@@ -53,7 +53,6 @@ class Maze {
       console.log("redraw");
       this.draw();
       current.highlight(this.columns);
-      gameOver();
     }, 500);
   }
 
@@ -108,10 +107,21 @@ class Maze {
       this.draw();
     });
   }
+  
+  gameOver() {
+    //fix this pice of code that is not working beacuse it not decctecting //
+    //its probally doent know player .current and ghost.curent// 
+    for (let ghost of this.ghosts) {
+      if (current.colNum === ghost.colNum && current.rowNum === ghost.rowNum){
+        loss.style.display = "block";
+      }
+    }
+  }
 
   moveGhosts() {
-    //get the ghost  to move byitself 
-    this.ghosts.forEach(ghost => ghost.moveRandom());
+      this.ghosts.forEach(ghost => ghost.moveRandom());
+   
+    this.gameOver();
   }
 }
 
@@ -316,14 +326,7 @@ class Ghost {
     return false;
   }
 
-  gameOver() {
-    //fix this pice of code that is not working beacuse it not decctecting //
-    //its probally doent know player .current and ghost.curent// 
-    if (current.ghost.colNum === current.highlight.colNum && current.ghost.rowNum === current.highlight.rowNum) {
-      console.log(chese)
-      loss.style.display = "block";
-    }
-  }
+ 
 
   
 
