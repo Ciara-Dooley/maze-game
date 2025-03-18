@@ -158,7 +158,7 @@ class Cell {
     let left = col !== 0 ? grid[row][col - 1] : undefined;
 
     // if the following are not 'undefined' then push them to the neighbours array
-    if (top && !top.visited) neighbours.push(top);
+    if (top && !top.visited) neighbours.push(top);     
     if (right && !right.visited) neighbours.push(right);
     if (bottom && !bottom.visited) neighbours.push(bottom);
     if (left && !left.visited) neighbours.push(left);
@@ -254,13 +254,11 @@ class Cell {
       ctx.fillRect(x + 1, y + 1, size / columns - 2, size / rows - 2);
     }
     if (this.goal) {
-      ctx.fillStyle = "rgba(83, 247, 43, 0.8)";
-      ctx.beginPath();
-      ctx.arc(x + size / columns / 2, y + size / rows / 2, size / columns / 2, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.strokeStyle = "gold";
-      ctx.lineWidth = 4;
-      ctx.stroke();
+      const gradient = ctx.createRadialGradient(x + size / columns / 2, y + size / rows / 2, 5, x + size / columns / 2, y + size / rows / 2, size / columns / 2);
+      gradient.addColorStop(0, "rgba(255, 255, 255, 1)"); // Center color
+      gradient.addColorStop(1, "rgba(83, 247, 43, 0)"); // Outer color
+      ctx.fillStyle = gradient;
+      ctx.fillRect(x + 1, y + 1, size / columns - 2, size / rows - 2);
 
     }
   }
@@ -355,3 +353,4 @@ class Ghost {
     }
   }
 }
+
