@@ -94,7 +94,7 @@ input {
   font-family: "Bungee Inline", cursive;
 }
 
-.score{
+.score, .score *{
   position: absolute;
   left: 20%;
   transform: translateX(-50%);
