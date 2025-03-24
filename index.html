@@ -15,7 +15,6 @@
     <div class="complete">
       <h3>Maze Completed.</h3>
       <button class="replay" id="submit">play again</button>
-      <!--make this button go to the next level -->
       <button class="close" id="submit">Close</button>
     </div>
 
@@ -25,21 +24,22 @@
       <button class="close" id="submit">Close</button>
     </div>
     
-      <form id="settings" action="">
-        <p>Maze Size</p>
-        <input id="size" type="number" value="500"/></br>
-        <p>Rows/Columns</p>
-        <input id="number" type="number" value="20" /></br>
-        <input id="submit" type="submit" value="Generate Maze">
-      </form>
+    <form id="settings" action="">
+      <p>Maze Size</p>
+      <input id="size" type="number" value="500"/></br>
+      <p>Rows/Columns</p>
+      <input id="number" type="number" value="20" /></br>
+      <input id="submit" type="submit" value="Generate Maze">
+    </form>
   
     <canvas class="maze"></canvas>
-    <h3>score: ;</h3>
+    <div id="scoreDisplay" style="display: none;">
+      <div id="scoreDisplay" style="display: none;">
+        <h3 >Score: <p id="score">0</p></h3>
+      </div>
+    
 
     <script src="maze.js"></script>
     <script src="setting.js"></script>
-
-
-   
   </body>
 </html>

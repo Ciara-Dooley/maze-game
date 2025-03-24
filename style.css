@@ -93,3 +93,13 @@ input {
   color: #000000;
   font-family: "Bungee Inline", cursive;
 }
+
+.score{
+  position: absolute;
+  left: 20%;
+  transform: translateX(-50%);
+  top: 90%;
+  color: #000000;
+  font-family: "Bungee Inline", cursive;
+  size: 2px;
+}

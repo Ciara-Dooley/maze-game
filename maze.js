@@ -1,4 +1,7 @@
-// Generating the maze 
+
+let scoreDisplay = document.getElementById("scoreDisplay"); // Get score display element
+let score = document.getElementById("score"); // Get score  element
+// Generating the maze
 
 // Initialize the canvas
 let loss = document.querySelector(".loss");
@@ -8,8 +11,6 @@ let generationComplete = false;
 
 let current;
 let goal;
-
-
 
 class Maze {
   constructor(size, rows, columns) {
@@ -47,11 +48,13 @@ class Maze {
     this.addGhost("pink", Math.floor(this.columns / 2), Math.floor(this.rows / 2)); // Middle
     this.addGhost("blue", this.columns - 1, 0); // Top right
     
+    scoreDisplay.style.display = "block"; // Show score display
     setInterval(() => {
+        score++; // Increment score as the game progresses
+        document.getElementById("score").innerText = score; // Update score display
 
-      console.log("move ghosts");
+     
       this.moveGhosts();
-      console.log("redraw");
       this.draw();
       current.highlight(this.columns);
     }, 500);
@@ -64,7 +67,7 @@ class Maze {
     maze.style.background = "black";
     // Set the first cell as visited
     current.visited = true;
-    // Loop through the 2d grid array and call the show method for each cell instance
+    // Loop through the 2d grid array and call the show method for each cell instance    
     for (let r = 0; r < this.rows; r++) {
       for (let c = 0; c < this.columns; c++) {
         let grid = this.grid;
@@ -122,7 +125,14 @@ class Maze {
   moveGhosts() {
       this.ghosts.forEach(ghost => ghost.moveRandom());
    
-    this.gameOver();
+    this.gameOver(); // Check for game over conditions
+    if (current.hasPellet) {
+        score++; // Increment score
+        document.getElementById("score").innerText = score; // Update score display
+        current.hasPellet = false; // Mark pellet as collected
+    }
+
+
   }
 
   placePellets() {
@@ -306,16 +316,12 @@ class Ghost {
     let y = (this.rowNum * this.maze.size) / this.maze.columns + 1;
     ctx.fillStyle = this.color;
 
-
-
     ctx.fillRect(
       x,
       y,
       this.maze.size / this.maze.columns - 3,
       this.maze.size / this.maze.columns - 3
     );
-
-
   }
 
   moveDown() {
@@ -351,18 +357,13 @@ class Ghost {
     return false;
   }
 
- 
-
-  
-
   moveRandom() {
-
     let moved = false;
     let tries = 0;
     while (!moved && tries < 10) {
       tries++;
       let dir = Math.floor(Math.random() * 4); // 0, 1, 2, 3
-      console.log("move " + dir);
+     
       switch (dir) {
         case 0:
           moved = this.moveDown();
