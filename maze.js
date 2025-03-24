@@ -29,6 +29,7 @@ class Maze {
 
   // Set the grid: Create new this.grid array based on number of instance rows and columns
   setup() {
+    
     for (let r = 0; r < this.rows; r++) {
       let row = [];
       for (let c = 0; c < this.columns; c++) {
@@ -48,10 +49,9 @@ class Maze {
     this.addGhost("pink", Math.floor(this.columns / 2), Math.floor(this.rows / 2)); // Middle
     this.addGhost("blue", this.columns - 1, 0); // Top right
     
-    scoreDisplay.style.display = "block"; // Show score display
+  
     setInterval(() => {
-        score++; // Increment score as the game progresses
-        document.getElementById("score").innerText = score; // Update score display
+      
 
      
       this.moveGhosts();
@@ -124,7 +124,7 @@ class Maze {
 
   moveGhosts() {
       this.ghosts.forEach(ghost => ghost.moveRandom());
-   
+      scoreDisplay.style.display = "block";
     this.gameOver(); // Check for game over conditions
     if (current.hasPellet) {
         score++; // Increment score

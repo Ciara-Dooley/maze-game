@@ -92,7 +92,7 @@ function move(e) {
   
   if (current.hasPellet) {
     gamescore += 1;
-    score.inntextContent =  gamescore;
+    score.textContent =  gamescore;
   }
 
 }
