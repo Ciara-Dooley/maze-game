@@ -6,6 +6,7 @@ let replay = document.querySelector(".replay");
 let closeEls = document.querySelectorAll(".close");
 let gamescore = 0;
 let newMaze;
+let allpellet = false;
 form.addEventListener("submit", generateMaze);
 document.addEventListener("keydown", move);
 replay.addEventListener("click", () => {
@@ -54,46 +55,62 @@ function move(e) {
         newMaze.draw();
         current.highlight(newMaze.columns);
         // not required if goal is in bottom right
-        if (current.goal) complete.style.display = "block";
+        if (current.goal & allpellet == true ) complete.style.display = "block";
       }
       break;
 
     case "ArrowRight":
+      
       if (!current.walls.rightWall) {
         let next = newMaze.grid[row][col + 1];
         current = next;
         newMaze.draw();
         current.highlight(newMaze.columns);
-        if (current.goal) complete.style.display = "block";
+        if (current.goal & allpellet == true ) complete.style.display = "block";
       }
       break;
 
     case "ArrowDown":
+      
       if (!current.walls.bottomWall) {
         let next = newMaze.grid[row + 1][col];
         current = next;
         newMaze.draw();
         current.highlight(newMaze.columns);
-        if (current.goal) complete.style.display = "block";
+        if (current.goal & allpellet == true ) complete.style.display = "block";
       }
       break;
 
     case "ArrowLeft":
+ 
       if (!current.walls.leftWall) {
         let next = newMaze.grid[row][col - 1];
         current = next;
         newMaze.draw();
         current.highlight(newMaze.columns);
         // not required if goal is in bottom right
-        if (current.goal) complete.style.display = "block";
+        if (current.goal & allpellet == true ) complete.style.display = "block";
       }
       break;
   }
-  
+ 
+
   if (current.hasPellet) {
     gamescore += 1;
     current.hasPellet = false;
     score.textContent =  gamescore;
   }
 
+}
+  function checkpellets(){
+  for (let row of this.grid) {
+    for (let cell of row) {
+      if (cell.hasPellet) {
+        let allpellet = true; 
+      }else{
+        let allpellet = false;
+      } 
+    }
+  }
+  alert("Maze Complete!");
 }
