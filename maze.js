@@ -126,11 +126,7 @@ class Maze {
       this.ghosts.forEach(ghost => ghost.moveRandom());
       scoreDisplay.style.display = "block";
     this.gameOver(); // Check for game over conditions
-    if (current.hasPellet) {
-        score++; // Increment score
-        document.getElementById("score").innerText = score; // Update score display
-        current.hasPellet = false; // Mark pellet as collected
-    }
+
 
 
   }

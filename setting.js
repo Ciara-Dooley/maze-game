@@ -92,6 +92,7 @@ function move(e) {
   
   if (current.hasPellet) {
     gamescore += 1;
+    current.hasPellet = false;
     score.textContent =  gamescore;
   }
 
