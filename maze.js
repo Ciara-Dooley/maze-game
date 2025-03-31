@@ -1,6 +1,5 @@
-
 let scoreDisplay = document.getElementById("scoreDisplay"); // Get score display element
-let score = document.getElementById("score"); // Get score  element
+let score = document.getElementById("score"); // Get score element
 // Generating the maze
 
 // Initialize the canvas
@@ -11,6 +10,10 @@ let generationComplete = false;
 
 let current;
 let goal;
+
+// Add these variables at the top of the file
+let showArrow = true; // Flag to control arrow visibility
+const arrowPosition = { x: 0, y: 0 }; // Position of the arrow
 
 class Maze {
   constructor(size, rows, columns) {
@@ -29,31 +32,28 @@ class Maze {
 
   // Set the grid: Create new this.grid array based on number of instance rows and columns
   setup() {
-    
     for (let r = 0; r < this.rows; r++) {
       let row = [];
       for (let c = 0; c < this.columns; c++) {
-        // Create a new instance of the Cell class for each element in the 2D array and push to the maze grid array
         let cell = new Cell(r, c, this.grid, this.size);
         row.push(cell);
       }
       this.grid.push(row);
     }
-    // Set the starting grid and place pellets
     current = this.grid[0][0];
     this.grid[this.rows - 1][this.columns - 1].goal = true;
-    this.placePellets(); // Call to place pellets in the maze
+    this.placePellets();
 
     // Positioning the ghosts
-    this.addGhost("red", 0, this.rows - 1); // Bottom left
-    this.addGhost("pink", Math.floor(this.columns / 2), Math.floor(this.rows / 2)); // Middle
-    this.addGhost("blue", this.columns - 1, 0); // Top right
-    
-  
-    setInterval(() => {
-      
+    this.addGhost("red", 0, this.rows - 1);
+    this.addGhost("pink", Math.floor(this.columns / 2), Math.floor(this.rows / 2));
+    this.addGhost("blue", this.columns - 1, 0);
 
-     
+    // Set the initial position of the arrow
+    arrowPosition.x = current.colNum * this.size / this.columns + this.size / (2 * this.columns);
+    arrowPosition.y = current.rowNum * this.size / this.rows + this.size / (2 * this.rows);
+
+    setInterval(() => {
       this.moveGhosts();
       this.draw();
       current.highlight(this.columns);
@@ -65,31 +65,22 @@ class Maze {
     maze.width = this.size;
     maze.height = this.size;
     maze.style.background = "black";
-    // Set the first cell as visited
     current.visited = true;
-    // Loop through the 2d grid array and call the show method for each cell instance    
+
     for (let r = 0; r < this.rows; r++) {
       for (let c = 0; c < this.columns; c++) {
         let grid = this.grid;
         grid[r][c].show(this.size, this.rows, this.columns);
       }
     }
-    // This function will assign the variable 'next' to random cell out of the current cells available neighbouting cells
+
     let next = current.checkNeighbours();
-    // If there is a non visited neighbour cell
     if (next) {
       next.visited = true;  
-      // Add the current cell to the stack for backtracking
       this.stack.push(current);
-      // this function will highlight the current cell on the grid. The parameter columns is passed
-      // in order to set the size of the cell
       current.highlight(this.columns);
-      // This function compares the current cell to the next cell and removes the relevant walls for each cell
       current.removeWalls(current, next);
-      // Set the nect cell to the current cell
       current = next;
-
-      // Else if there are no available neighbours start backtracking using the stack
     } else if (this.stack.length > 0) {
       let cell = this.stack.pop();
       current = cell;
@@ -100,21 +91,34 @@ class Maze {
       ghost.draw();
     }
 
-    // If no more items in the stack then all cells have been visted and the function can be exited
+    // Draw the arrow if showArrow is true
+    if (showArrow) {
+      ctx.fillStyle = "yellow"; // Arrow color
+      ctx.beginPath();
+      // Position the arrow outside the maze, pointing towards the player
+      const arrowOffset = 10; // Distance from the maze
+      ctx.moveTo(arrowPosition.x + arrowOffset, arrowPosition.y); // Arrow tip
+      ctx.lineTo(arrowPosition.x + arrowOffset + 5, arrowPosition.y - 5); // Arrow left
+      ctx.lineTo(arrowPosition.x + arrowOffset + 5, arrowPosition.y + 5); // Arrow right
+      ctx.fill();
+
+      // Draw the message next to the arrow
+      ctx.fillStyle = "white"; // Message color
+      ctx.font = "16px Arial";
+      ctx.fillText("This is you", arrowPosition.x + arrowOffset + 15, arrowPosition.y);
+    }
+
     if (this.stack.length === 0) {
       generationComplete = true;
       return;
     }
 
-    // Recursively call the draw function. This will be called up until the stack is empty
     window.requestAnimationFrame(() => {
       this.draw();
     });
   }
   
   gameOver() {
-    //fix this pice of code that is not working beacuse it not decctecting //
-    //its probally doent know player .current and ghost.curent// 
     for (let ghost of this.ghosts) {
       if (current.colNum === ghost.colNum && current.rowNum === ghost.rowNum){
         loss.style.display = "block";
@@ -125,15 +129,12 @@ class Maze {
   moveGhosts() {
       this.ghosts.forEach(ghost => ghost.moveRandom());
       scoreDisplay.style.display = "block";
-    this.gameOver(); // Check for game over conditions
-
-
-
+      this.gameOver(); // Check for game over conditions
   }
 
   placePellets() {
     const totalCells = this.rows * this.columns;
-    const pelletCount = Math.floor(totalCells * 0.1); // Place pellets in 10% of the cells
+    const pelletCount = Math.floor(totalCells * 0.1);
     let placedPellets = 0;
 
     while (placedPellets < pelletCount) {
@@ -141,7 +142,7 @@ class Maze {
       const randomCol = Math.floor(Math.random() * this.columns);
       const cell = this.grid[randomRow][randomCol];
 
-      if (!cell.hasPellet && !cell.goal) { // Ensure pellets are not placed on the goal
+      if (!cell.hasPellet && !cell.goal) {
         cell.hasPellet = true;
         placedPellets++;
       }
@@ -149,8 +150,15 @@ class Maze {
   }
 }
 
+// Add an event listener for player movement
+document.addEventListener('keydown', (event) => {
+    // Existing movement logic...
+    
+    // Hide the arrow when the player moves
+    showArrow = false;
+});
+
 class Cell {
-  // Constructor takes in the rowNum and colNum which will be used as coordinates to draw on the canvas.
   constructor(rowNum, colNum, parentGrid, parentSize) {
     this.rowNum = rowNum;
     this.colNum = colNum;
@@ -162,9 +170,7 @@ class Cell {
       leftWall: true,
     };
     this.goal = false;
-    this.hasPellet = false; // New property for pellets
-    // parentGrid is passed in to enable the  checkneighbours method.
-    // parentSize is passed in to set the size of each cell on the grid
+    this.hasPellet = false;
     this.parentGrid = parentGrid;
     this.parentSize = parentSize;
   }
@@ -175,20 +181,16 @@ class Cell {
     let col = this.colNum;
     let neighbours = [];
 
-    // The following lines push all available neighbours to the neighbours array
-    // undefined is returned where the index is out of bounds (edge cases)
     let top = row !== 0 ? grid[row - 1][col] : undefined;
     let right = col !== grid.length - 1 ? grid[row][col + 1] : undefined;
     let bottom = row !== grid.length - 1 ? grid[row + 1][col] : undefined;
     let left = col !== 0 ? grid[row][col - 1] : undefined;
 
-    // if the following are not 'undefined' then push them to the neighbours array
     if (top && !top.visited) neighbours.push(top);     
     if (right && !right.visited) neighbours.push(right);
     if (bottom && !bottom.visited) neighbours.push(bottom);
     if (left && !left.visited) neighbours.push(left);
 
-    // Choose a random neighbour from the neighbours array
     if (neighbours.length !== 0) {
       let random = Math.floor(Math.random() * neighbours.length);
       return neighbours[random];
@@ -197,7 +199,6 @@ class Cell {
     }
   }
 
-  // Wall drawing functions for each cell. Will be called if relevent wall is set to true in cell constructor
   drawTopWall(x, y, size, columns, rows) {
     ctx.beginPath();
     ctx.moveTo(x, y);
@@ -226,9 +227,7 @@ class Cell {
     ctx.stroke();
   }
 
-  // Highlights the current cell on the grid. Columns is once again passed in to set the size of the grid.
   highlight(columns) {
-    // Additions and subtractions added so the highlighted cell does cover the walls
     let x = (this.colNum * this.parentSize) / columns + 1;
     let y = (this.rowNum * this.parentSize) / columns + 1;
     ctx.fillStyle = "purple";
@@ -242,9 +241,7 @@ class Cell {
   }
 
   removeWalls(cell1, cell2) {
-    // compares to two cells on x axis
     let x = cell1.colNum - cell2.colNum;
-    // Removes the relevant walls if there is a different on x axis
     if (x === 1) {
       cell1.walls.leftWall = false;
       cell2.walls.rightWall = false;
@@ -252,9 +249,7 @@ class Cell {
       cell1.walls.rightWall = false;
       cell2.walls.leftWall = false;
     }
-    // compares to two cells on x axis
     let y = cell1.rowNum - cell2.rowNum;
-    // Removes the relevant walls if there is a different on x axis
     if (y === 1) {
       cell1.walls.topWall = false;
       cell2.walls.bottomWall = false;
@@ -263,8 +258,6 @@ class Cell {
       cell2.walls.topWall = false;
     }
   }
-
-  // Draws each of the cells on the maze canvas and pellets
 
   show(size, rows, columns) {
     let x = (this.colNum * size) / columns;
@@ -285,9 +278,7 @@ class Cell {
       gradient.addColorStop(1, "rgba(83, 247, 43, 0)"); // Outer color
       ctx.fillStyle = gradient;
       ctx.fillRect(x + 1, y + 1, size / columns - 2, size / rows - 2);
-
     }
-    // Draw pellet if present
     if (this.hasPellet) {
       ctx.fillStyle = "grey";
       ctx.beginPath();
@@ -295,7 +286,6 @@ class Cell {
       ctx.fill();
     }
   }
-
 }
 
 class Ghost {
@@ -307,7 +297,6 @@ class Ghost {
   }
 
   draw() {
-    // Additions and subtractions added so the highlighted cell does cover the walls
     let x = (this.colNum * this.maze.size) / this.maze.columns + 1;
     let y = (this.rowNum * this.maze.size) / this.maze.columns + 1;
     ctx.fillStyle = this.color;
@@ -377,3 +366,6 @@ class Ghost {
     }
   }
 }
+
+
+
