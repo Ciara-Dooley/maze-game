@@ -294,6 +294,15 @@ class Ghost {
     this.rowNum = rowNum;
     this.maze = maze;
     this.color = color;
+    this.lastVisitedCells = []; // Track last visited cells
+    this.moveCounter = 0; // Track moves since last visit
+  }
+
+  constructor(colNum, rowNum, maze, color) {
+    this.colNum = colNum;
+    this.rowNum = rowNum;
+    this.maze = maze;
+    this.color = color;
   }
 
   draw() {
@@ -311,7 +320,8 @@ class Ghost {
 
   moveDown() {
     let currentTile = this.maze.grid[this.rowNum][this.colNum];
-    if (!currentTile.walls.bottomWall) {
+      if (!currentTile.walls.bottomWall & this.lastVisitedCell == this.currentTile.rowNum += 1; ) {
+      this.lastVisitedCell = [this.rowNum, this.colNum];
       this.rowNum += 1;
       return true;
     }
@@ -320,6 +330,7 @@ class Ghost {
   moveUp() {
     let currentTile = this.maze.grid[this.rowNum][this.colNum];
     if (!currentTile.walls.topWall) {
+      this.rowNum += 1;
       this.rowNum -= 1;
       return true;
     }
@@ -328,6 +339,7 @@ class Ghost {
   moveRight() {
     let currentTile = this.maze.grid[this.rowNum][this.colNum];
     if (!currentTile.walls.rightWall) {
+      this.rowNum += 1;
       this.colNum += 1;
       return true;
     }
@@ -336,6 +348,7 @@ class Ghost {
   moveLeft() {
     let currentTile = this.maze.grid[this.rowNum][this.colNum];
     if (!currentTile.walls.leftWall) {
+      this.rowNum += 1;
       this.colNum -= 1;
       return true;
     }
