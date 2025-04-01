@@ -323,13 +323,6 @@ class Ghost {
 
 
 
-
-
-
-
-
-
-
   moveDown() {
     let currentTile = this.maze.grid[this.rowNum][this.colNum];
       if (
