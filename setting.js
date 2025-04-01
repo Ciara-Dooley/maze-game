@@ -55,7 +55,7 @@ function move(e) {
         newMaze.draw();
         current.highlight(newMaze.columns);
         // not required if goal is in bottom right
-        if (current.goal & allpellet == true ) complete.style.display = "block";
+        if (current.goal && allpellet == true ) complete.style.display = "block";
       }
       break;
 
@@ -66,7 +66,7 @@ function move(e) {
         current = next;
         newMaze.draw();
         current.highlight(newMaze.columns);
-        if (current.goal & allpellet == true ) complete.style.display = "block";
+        if (current.goal && allpellet == true ) complete.style.display = "block";
       }
       break;
 
@@ -77,7 +77,7 @@ function move(e) {
         current = next;
         newMaze.draw();
         current.highlight(newMaze.columns);
-        if (current.goal & allpellet == true ) complete.style.display = "block";
+        if (current.goal && allpellet == true ) complete.style.display = "block";
       }
       break;
 
@@ -89,7 +89,7 @@ function move(e) {
         newMaze.draw();
         current.highlight(newMaze.columns);
         // not required if goal is in bottom right
-        if (current.goal & allpellet == true ) complete.style.display = "block";
+        if (current.goal && allpellet == true ) complete.style.display = "block";
       }
       break;
   }
@@ -107,6 +107,7 @@ function move(e) {
     for (let cell of row) {
       if (cell.hasPellet) {
         let allpellet = true; 
+        console.log(true);
       }else{
         let allpellet = false;
       } 
